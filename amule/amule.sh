@@ -3,6 +3,7 @@
 # Uncomment for debug
 #set -x
 
+APP_VERSION=2.3.2
 AMULE_UID=${PUID:-5000}
 AMULE_GID=${PGID:-5000}
 AMULE_WEBUI_TEMPLATE=${WEBUI_TEMPLATE:-default}
@@ -65,7 +66,7 @@ if [[ ! -f ${AMULE_CONF} ]]; then
     echo "${AMULE_CONF} file NOT found. Generating new default configuration ..."
     cat > ${AMULE_CONF} <<- EOM
 [eMule]
-AppVersion=2.3.1
+AppVersion=${APP_VERSION}
 Nick=http://www.aMule.org
 QueueSizePref=50
 MaxUpload=0

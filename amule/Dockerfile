@@ -1,5 +1,6 @@
+# a fork of https://hub.docker.com/r/tchabaud/amule
 FROM alpine:latest
-MAINTAINER docker@chabs.name
+MAINTAINER hh
 
 ENV AMULE_VERSION 2.3.2
 ENV UPNP_VERSION 1.6.22
@@ -24,7 +25,7 @@ RUN mkdir -p /opt \
 
 # Build crypto++
 RUN mkdir -p /opt && cd /opt \
-    && git clone --branch ${CRYPTOPP_VERSION} --single-branch "https://github.com/weidai11/cryptopp" /opt/cryptopp \
+    && git clone --depth 1 --branch ${CRYPTOPP_VERSION} --single-branch "https://github.com/weidai11/cryptopp" /opt/cryptopp \
     && cd /opt/cryptopp \
     && sed -i -e 's/^CXXFLAGS/#CXXFLAGS/' GNUmakefile \
     && export CXXFLAGS="${CXXFLAGS} -DNDEBUG -fPIC" \
@@ -36,7 +37,7 @@ RUN mkdir -p /opt && cd /opt \
 
 # Build amule from source
 RUN mkdir -p /opt/amule \
-    && git clone --branch ${AMULE_VERSION} --single-branch "https://github.com/amule-project/amule" /opt/amule \
+    && git clone --depth 1 --branch ${AMULE_VERSION} --single-branch "https://github.com/amule-project/amule" /opt/amule \
     && cd /opt/amule \
     && ./autogen.sh \
     && ./configure \
@@ -67,7 +68,7 @@ RUN mkdir -p /opt/amule \
 
 # Install a nicer web ui
 RUN cd /usr/share/amule/webserver \
-    && git clone https://github.com/MatteoRagni/AmuleWebUI-Reloaded \
+    && git clone --depth 1 https://github.com/MatteoRagni/AmuleWebUI-Reloaded \
     && rm -rf AmuleWebUI-Reloaded/.git AmuleWebUI-Reloaded/doc-images
 
 # Add startup script
