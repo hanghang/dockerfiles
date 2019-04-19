@@ -1,6 +1,5 @@
 # a fork of https://hub.docker.com/r/tchabaud/amule
-FROM alpine:latest
-MAINTAINER hh
+FROM alpine:3.9 as builder
 
 ENV AMULE_VERSION 2.3.2
 ENV UPNP_VERSION 1.6.22
@@ -66,18 +65,46 @@ RUN mkdir -p /opt/amule \
     && make \
     && make install
 
-# Install a nicer web ui
-RUN cd /usr/share/amule/webserver \
-    && git clone --depth 1 https://github.com/MatteoRagni/AmuleWebUI-Reloaded \
-    && rm -rf AmuleWebUI-Reloaded/.git AmuleWebUI-Reloaded/doc-images
+
+
+FROM alpine:3.9
+MAINTAINER hh
+RUN apk --update add bash pwgen sudo
+#RUN apk --update add gd
+#RUN apk --update add zlib 
+
+#copy binaries
+COPY --from=builder /usr/bin/amule /usr/bin/amule
+COPY --from=builder /usr/bin/amulecmd /usr/bin/amulecmd
+COPY --from=builder /usr/bin/amuled /usr/bin/amuled
+COPY --from=builder /usr/bin/amuleweb /usr/bin/amuleweb
+
+#copy libs
+COPY --from=builder /usr/lib/libgcc_s.so /usr/lib/libgcc_s.so 
+COPY --from=builder /usr/lib/libgcc_s.so.1 /usr/lib/libgcc_s.so.1
+COPY --from=builder /usr/lib/libstdc++.so /usr/lib/libstdc++.so
+COPY --from=builder /usr/lib/libstdc++.so.6 /usr/lib/libstdc++.so.6
+COPY --from=builder /usr/lib/libstdc++.so.6.0.25 /usr/lib/libstdc++.so.6.0.25
+COPY --from=builder /usr/lib/libthreadutil.so.6 /usr/lib/libthreadutil.so.6
+COPY --from=builder /usr/lib/libthreadutil.so.6.0.4 /usr/lib/libthreadutil.so.6.0.4
+COPY --from=builder /usr/lib/libcryptopp.so.5.6 /usr/lib/libcryptopp.so.5.6
+COPY --from=builder /usr/lib/libupnp.so.6 /usr/lib/libupnp.so.6
+COPY --from=builder /usr/lib/libupnp.so.6.3.6 /usr/lib/libupnp.so.6.3.6
+COPY --from=builder /usr/lib/libixml.so.2 /usr/lib/libixml.so.2
+COPY --from=builder /usr/lib/libixml.so.2.0.8 /usr/lib/libixml.so.2.0.8
+COPY --from=builder /usr/lib/libwx_baseu_net-2.8.so.0 /usr/lib/libwx_baseu_net-2.8.so.0
+COPY --from=builder /usr/lib/libwx_baseu_net-2.8.so.0.8.0 /usr/lib/libwx_baseu_net-2.8.so.0.8.0
+COPY --from=builder /usr/lib/libwx_baseu-2.8.so.0 /usr/lib/libwx_baseu-2.8.so.0
+COPY --from=builder /usr/lib/libwx_baseu-2.8.so.0.8.0 /usr/lib/libwx_baseu-2.8.so.0.8.0
 
 # Add startup script
 ADD amule.sh /home/amule/amule.sh
+RUN chmod a+x /home/amule/amule.sh
 
-# Final cleanup
-RUN chmod a+x /home/amule/amule.sh \
-    && rm -rf /var/cache/apk/* && rm -rf /opt \
-    && apk del build-dependencies
+# Install a nicer web ui
+#RUN cd /usr/share/amule/webserver \
+#    && git clone --depth 1 https://github.com/MatteoRagni/AmuleWebUI-Reloaded \
+#    && rm -rf AmuleWebUI-Reloaded/.git AmuleWebUI-Reloaded/doc-images
 
 EXPOSE 4711/tcp 4712/tcp 4672/udp 4665/udp 4662/tcp 4661/tcp
 
