@@ -97,7 +97,8 @@ COPY --from=builder /usr/lib/libwx_baseu_net-2.8.so.0.8.0 /usr/lib/libwx_baseu_n
 COPY --from=builder /usr/lib/libwx_baseu-2.8.so.0 /usr/lib/libwx_baseu-2.8.so.0
 COPY --from=builder /usr/lib/libwx_baseu-2.8.so.0.8.0 /usr/lib/libwx_baseu-2.8.so.0.8.0
 COPY --from=builder /usr/lib/libpng16.so.16 /usr/lib/libpng16.so.16 
-COPY --from=builder /usr/lib/libintl.so.8 /usr/lib/libpng16.so.16 
+COPY --from=builder /usr/lib/libintl.so.8 /usr/lib/libintl.so.8
+COPY --from=builder /usr/share/amule /usr/share/amule
 
 # Add startup script
 ADD amule.sh /home/amule/amule.sh
