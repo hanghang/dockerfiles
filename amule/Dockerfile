@@ -65,6 +65,10 @@ RUN mkdir -p /opt/amule \
     && make \
     && make install
 
+# Install a nicer web ui
+RUN cd /usr/share/amule/webserver \
+    && git clone --depth 1 https://github.com/MatteoRagni/AmuleWebUI-Reloaded \
+    && rm -rf AmuleWebUI-Reloaded/.git AmuleWebUI-Reloaded/doc-images
 
 
 FROM alpine:3.9
@@ -104,10 +108,6 @@ COPY --from=builder /usr/share/amule /usr/share/amule
 ADD amule.sh /home/amule/amule.sh
 RUN chmod a+x /home/amule/amule.sh
 
-# Install a nicer web ui
-#RUN cd /usr/share/amule/webserver \
-#    && git clone --depth 1 https://github.com/MatteoRagni/AmuleWebUI-Reloaded \
-#    && rm -rf AmuleWebUI-Reloaded/.git AmuleWebUI-Reloaded/doc-images
 
 EXPOSE 4711/tcp 4712/tcp 4672/udp 4665/udp 4662/tcp 4661/tcp
 
